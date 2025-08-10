@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.28;
 
-// Uncomment this line to use console.log
-// import "hardhat/console.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-contract Vault {
+contract Vault is ReentrancyGuard {
   address payable public owner;
 
   constructor() {
@@ -26,16 +25,17 @@ contract Vault {
     deposits[msg.sender] += msg.value;
   }
 
-  function userWithdraw(uint256 _amount) public payable {
+  function userWithdraw(uint256 _amount) public payable nonReentrant {
+    // 1 check
     require(deposits[msg.sender] >= _amount, "not enough balance");
-
+    // 2 effect
+    deposits[msg.sender] -= _amount;
+    // 3 interaction
     (bool success,) = msg.sender.call{value: _amount}("");
     require(success, "faild");
-
-    deposits[msg.sender] -= _amount;
   }
 
-  function withdraw(address _to, uint256 _amount) payable external onlyOwner {
+  function withdraw(address _to, uint256 _amount) payable external onlyOwner nonReentrant {
     require(address(this).balance > 0, "nothing to withdraw");
     (bool success,) = _to.call{value: _amount}("");
     require(success, "faild");
