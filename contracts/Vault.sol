@@ -44,4 +44,8 @@ contract Vault is ReentrancyGuard {
   function getBalance() external view returns(uint256) {
     return address(this).balance;
   }
+
+  function getUserDeposit() public view returns(uint256) {
+    return deposits[msg.sender];
+  }
 }

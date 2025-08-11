@@ -22,7 +22,7 @@ describe('Vault', function () {
     await ct.waitForDeployment()
   })
 
-  describe('deploy', function () {
+  describe('Deploy', function () {
     it('Should be right owner', async function () {
       const ownerAddr = await owner.getAddress()
       const ctOwnerAddr = await ct.owner()
@@ -132,6 +132,19 @@ describe('Vault', function () {
       await tx.wait()
 
       expect(await ct.deposits(addr1.getAddress())).to.equal(ETH_AMOUNT)
+    })
+  })
+
+  describe('Deposits', function () {
+    it('Should retrun user deposit correctly', async () => {
+      const tx = await addr1.sendTransaction({
+        to: ct.getAddress(),
+        value: ETH_AMOUNT,
+      })
+
+      const addr1Deposit = await ct.connect(addr1).getUserDeposit()
+
+      expect(addr1Deposit).to.be.eq(ETH_AMOUNT)
     })
   })
 })
