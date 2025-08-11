@@ -137,7 +137,7 @@ describe('Vault', function () {
 
   describe('Deposits', function () {
     it('Should retrun user deposit correctly', async () => {
-      const tx = await addr1.sendTransaction({
+      await addr1.sendTransaction({
         to: ct.getAddress(),
         value: ETH_AMOUNT,
       })
