@@ -1,10 +1,12 @@
 import { useState } from 'react'
 
 import { useEthereum } from '../../app/hooks/useEthereum'
+import { VaultErrors } from '../../contarcts/Vault/vaultErrors'
+import { formatEther } from '../../shared/utils/formatEther'
 import { parseEther } from '../../shared/utils/parseEther'
 
 export function WithdrawForm() {
-  const { signer, contract, provider } = useEthereum()
+  const { signer, contract } = useEthereum()
 
   const [value, setValue] = useState<string>('')
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -12,15 +14,20 @@ export function WithdrawForm() {
   }
 
   const handleWithdraw = async () => {
-    if (!signer || !contract || !provider) return
+    if (!signer || !contract) return
     const ethValue = parseEther(value)
+
     try {
       const contractWithSigner = contract.connect(signer)
       const tx = await contractWithSigner.userWithdraw(ethValue)
-
       await tx.wait()
-    } catch (error) {
-      console.log(error)
+    } catch (err: any) {
+      const errorData = err.data || err?.error?.data
+      const decoded = VaultErrors.parseError(errorData)
+
+      alert(
+        ` Needed ${formatEther(decoded?.args[1])} ETH but only ${formatEther(decoded?.args[0])} ETH available.`,
+      )
     }
   }
 
@@ -51,6 +58,7 @@ export function WithdrawForm() {
 
       <button
         onClick={handleWithdraw}
+        disabled={!value}
         style={{
           width: '100%',
         }}
