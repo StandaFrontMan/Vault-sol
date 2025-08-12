@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { useEthereum } from '../../app/hooks/useEthereum'
 import { VaultErrors } from '../../contarcts/Vault/vaultErrors'
@@ -21,6 +21,8 @@ export function WithdrawForm() {
       const contractWithSigner = contract.connect(signer)
       const tx = await contractWithSigner.userWithdraw(ethValue)
       await tx.wait()
+
+      setValue('')
     } catch (err: any) {
       const errorData = err.data || err?.error?.data
       const decoded = VaultErrors.parseError(errorData)
@@ -30,6 +32,20 @@ export function WithdrawForm() {
       )
     }
   }
+
+  useEffect(() => {
+    if (!contract) return
+
+    const listener = (sender, amount) => {
+      alert(`You withdraw ${formatEther(amount)} ETH`)
+    }
+
+    contract.on('WithdrawEvent', listener)
+
+    return () => {
+      contract.off('WithdrawEvent', listener)
+    }
+  }, [contract])
 
   return (
     <div

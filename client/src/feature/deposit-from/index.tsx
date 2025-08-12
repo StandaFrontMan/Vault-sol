@@ -1,11 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { useEthereum } from '../../app/hooks/useEthereum'
 import ctArtifacts from '../../contarcts/Vault/vault-artifacts.json'
+import { formatEther } from '../../shared/utils/formatEther'
 import { parseEther } from '../../shared/utils/parseEther'
 
 export function DepositForm() {
-  const { signer } = useEthereum()
+  const { signer, contract } = useEthereum()
 
   const [value, setValue] = useState<string>('')
 
@@ -21,7 +22,22 @@ export function DepositForm() {
     })
 
     await tx.wait()
+    setValue('')
   }
+
+  useEffect(() => {
+    if (!contract) return
+
+    const listener = (sender, amount) => {
+      alert(`You deposited ${formatEther(amount)} ETH`)
+    }
+
+    contract.on('DepositEvent', listener)
+
+    return () => {
+      contract.off('DepositEvent', listener)
+    }
+  }, [contract])
 
   return (
     <div
@@ -50,6 +66,7 @@ export function DepositForm() {
 
       <button
         onClick={handleDeposit}
+        disabled={!value}
         style={{
           width: '100%',
         }}
