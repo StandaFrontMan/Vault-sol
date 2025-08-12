@@ -49,6 +49,19 @@ describe('Vault', function () {
 
       expect(await ct.deposits(await addr1.getAddress())).to.be.eq(ETH_AMOUNT)
     })
+
+    it('Should emit event DepositEvent', async () => {
+      const addr1Address = await addr1.getAddress()
+
+      const tx = await addr1.sendTransaction({
+        to: ct.getAddress(),
+        value: ETH_AMOUNT,
+      })
+
+      await tx.wait()
+
+      expect(tx).to.emit(ct, 'DepositEvent').withArgs(addr1Address, ETH_AMOUNT)
+    })
   })
 
   describe('Withdraw', function () {
@@ -82,6 +95,17 @@ describe('Vault', function () {
       expect(addr1DepositeBeforeTx).to.be.eq(addr1DepositeAfterTx)
     })
 
+    it('Should emit event WithdrawEvent', async () => {
+      const addr1Address = await addr1.getAddress()
+
+      const tx = await addr1.sendTransaction({
+        to: ct.getAddress(),
+        value: ETH_AMOUNT,
+      })
+
+      expect(tx).to.emit(ct, 'WithdrawEvent').withArgs(addr1Address, ETH_AMOUNT)
+    })
+
     it('Revert incorrect user withdraw call', async function () {
       const incorrectEthAmount = ethers.parseEther('200')
       const addr1Deposit = await ct.deposits(addr1)
@@ -103,6 +127,19 @@ describe('Vault', function () {
       })
 
       await ct.connect(owner).withdraw(someAddr, ETH_AMOUNT)
+    })
+
+    it('Should emit event WithdrawEvent', async () => {
+      const ownerAddr = await owner.getAddress()
+
+      await addr1.sendTransaction({
+        to: ct.getAddress(),
+        value: ETH_AMOUNT,
+      })
+
+      const tx = await ct.connect(owner).withdraw(someAddr, ETH_AMOUNT)
+
+      expect(tx).to.emit(ct, 'WithdrawEvent').withArgs(ownerAddr, ETH_AMOUNT)
     })
 
     it('Revert incorrect withdraw call (_amount)', async function () {
@@ -134,6 +171,20 @@ describe('Vault', function () {
       await tx.wait()
 
       expect(await ct.deposits(addr1.getAddress())).to.equal(ETH_AMOUNT)
+    })
+
+    it('Should emit event DepositEvent', async () => {
+      const addr1Address = await addr1.getAddress()
+
+      const tx = await addr1.sendTransaction({
+        to: ct.getAddress(),
+        value: ETH_AMOUNT,
+        data: '0x1234',
+      })
+
+      await tx.wait()
+
+      expect(tx).to.emit(ct, 'DepositEvent').withArgs(addr1Address, ETH_AMOUNT)
     })
   })
 

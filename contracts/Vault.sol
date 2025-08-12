@@ -26,6 +26,20 @@ contract Vault is ReentrancyGuard {
 
   mapping(address => uint256) public deposits;
 
+  /**
+    @notice Emit when somebody throw funds in contrct
+    @param sender - sender address
+    @param amount - amount of funds
+   */
+  event DepositEvent(address indexed sender, uint256 amount);
+
+    /**
+    @notice Emit when somebody withdraw funds
+    @param sender - sender address
+    @param amount - amount of funds
+   */
+  event WithdrawEvent(address indexed sender, uint256 amount);
+
   modifier onlyOwner() {
     require(msg.sender == owner,
       OnlyOwnerAction({
@@ -37,10 +51,12 @@ contract Vault is ReentrancyGuard {
 
   receive() external payable {
     deposits[msg.sender] += msg.value;
+    emit DepositEvent(msg.sender, msg.value);
   }
 
   fallback() external payable {
     deposits[msg.sender] += msg.value;
+    emit DepositEvent(msg.sender, msg.value);
   }
 
   function userWithdraw(uint256 _amount) public payable nonReentrant {
@@ -56,6 +72,8 @@ contract Vault is ReentrancyGuard {
     // 3 interaction
     (bool success,) = msg.sender.call{value: _amount}("");
     require(success, "faild");
+
+    emit WithdrawEvent(msg.sender, _amount);
   }
 
   function withdraw(address _to, uint256 _amount) payable external onlyOwner nonReentrant {
@@ -66,6 +84,8 @@ contract Vault is ReentrancyGuard {
     );
     (bool success,) = _to.call{value: _amount}("");
     require(success, "faild");
+
+    emit WithdrawEvent(msg.sender, _amount);
   }
 
   function getBalance() external view returns(uint256) {
