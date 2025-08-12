@@ -1,13 +1,33 @@
-# Sample Hardhat Project
+# Ethereum Vault Contract
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a Hardhat Ignition module that deploys that contract.
+A secure smart contract for depositing and withdrawing ETH with reentrancy protection.
 
-Try running some of the following tasks:
+## Features
 
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat ignition deploy ./ignition/modules/Lock.ts
-```
+- Deposit ETH via direct transfer or fallback
+- Secure withdrawals with checks-effects-interactions pattern
+- Reentrancy protection using OpenZeppelin's ReentrancyGuard
+- Owner-restricted administrative functions
+- Event logging for all transactions
+- Real-time balance tracking
+
+## Smart Contract Functions
+
+### User Functions
+
+- `receive()`/`fallback()` - Accept ETH deposits
+- `userWithdraw(uint256 amount)` - Withdraw your deposited ETH
+- `getUserDeposit()` - Check your deposited balance
+
+### Admin Functions
+
+- `withdraw(address to, uint256 amount)` - Owner-only withdrawal
+- `getBalance()` - Check contract's total ETH balance
+
+## Development
+
+### Requirements
+
+- Node.js (v16+ recommended)
+- Hardhat
+- OpenZeppelin Contracts
