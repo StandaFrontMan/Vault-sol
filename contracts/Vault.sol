@@ -3,6 +3,12 @@ pragma solidity ^0.8.28;
 
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
+/// Insufficient balance for transfer. Needed `required` but only
+/// `available` available.
+/// @param available balance available.
+/// @param required requested amount to transfer.
+error InsufficientBalance(uint256 available, uint256 required);
+
 contract Vault is ReentrancyGuard {
   address payable public owner;
 
@@ -27,7 +33,12 @@ contract Vault is ReentrancyGuard {
 
   function userWithdraw(uint256 _amount) public payable nonReentrant {
     // 1 check
-    require(deposits[msg.sender] >= _amount, "not enough balance");
+    require(deposits[msg.sender] >= _amount,
+      InsufficientBalance({
+        available: deposits[msg.sender],
+        required: _amount
+      })
+    );
     // 2 effect
     deposits[msg.sender] -= _amount;
     // 3 interaction

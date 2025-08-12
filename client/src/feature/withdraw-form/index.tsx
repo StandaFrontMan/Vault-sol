@@ -14,11 +14,14 @@ export function WithdrawForm() {
   const handleWithdraw = async () => {
     if (!signer || !contract || !provider) return
     const ethValue = parseEther(value)
+    try {
+      const contractWithSigner = contract.connect(signer)
+      const tx = await contractWithSigner.userWithdraw(ethValue)
 
-    const contractWithSigner = contract.connect(signer)
-    const tx = await contractWithSigner.userWithdraw(ethValue)
-
-    await tx.wait()
+      await tx.wait()
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (

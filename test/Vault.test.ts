@@ -84,14 +84,16 @@ describe('Vault', function () {
 
     it('Revert incorrect user withdraw call', async function () {
       const incorrectEthAmount = ethers.parseEther('200')
+      const addr1Deposit = await ct.deposits(addr1)
+
       await addr1.sendTransaction({
         to: ct.getAddress(),
         value: ETH_AMOUNT,
       })
 
-      expect(
-        ct.connect(addr1).userWithdraw(incorrectEthAmount),
-      ).to.be.revertedWith('not enough balance')
+      expect(ct.connect(addr1).userWithdraw(incorrectEthAmount))
+        .to.be.revertedWithCustomError(ct, 'InsufficientBalance')
+        .withArgs(addr1Deposit, incorrectEthAmount)
     })
 
     it('Should withdraw should be able only for owner', async function () {
