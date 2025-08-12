@@ -10,6 +10,8 @@ A secure smart contract for depositing and withdrawing ETH with reentrancy prote
 - Owner-restricted administrative functions
 - Event logging for all transactions
 - Real-time balance tracking
+- Custom error handling with detailed parameters
+- Event-driven architecture for frontend updates
 
 ## Smart Contract Functions
 
@@ -24,10 +26,40 @@ A secure smart contract for depositing and withdrawing ETH with reentrancy prote
 - `withdraw(address to, uint256 amount)` - Owner-only withdrawal
 - `getBalance()` - Check contract's total ETH balance
 
-## Development
+### Custom errors handleng
 
-### Requirements
+```javascript
+try {
+  const contractWithSigner = contract.connect(signer)
+  const tx = await contractWithSigner.userWithdraw(ethValue)
+  await tx.wait()
 
-- Node.js (v16+ recommended)
-- Hardhat
-- OpenZeppelin Contracts
+} catch (err: any) {
+  const errorData = err.data || err?.error?.data
+  const decoded = VaultErrors.parseError(errorData)
+
+  alert(
+    ` Needed ${formatEther(decoded?.args[1])} ETH but only ${formatEther(decoded?.args[0])} ETH available.`,
+  )
+}
+```
+
+## Event Handling (Frontend Integration)
+
+### Contract Events
+
+```javascript
+// Deposit event
+const listener = (sender, amount) => {
+  alert(`You deposited ${formatEther(amount)} ETH`)
+}
+
+contract.on('DepositEvent', listener)
+
+// Withdraw event
+const listener = (sender, amount) => {
+  alert(`You withdraw ${formatEther(amount)} ETH`)
+}
+
+contract.on('WithdrawEvent', listener)
+```
