@@ -9,6 +9,14 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 /// @param required requested amount to transfer.
 error InsufficientBalance(uint256 available, uint256 required);
 
+/// Zero balance to withdraw
+/// @param warning - string text
+error ZeroBalanceForWithdraw(string warning);
+
+/// Only owner action
+/// @param warning - string text
+error OnlyOwnerAction(string warning);
+
 contract Vault is ReentrancyGuard {
   address payable public owner;
 
@@ -19,7 +27,11 @@ contract Vault is ReentrancyGuard {
   mapping(address => uint256) public deposits;
 
   modifier onlyOwner() {
-    require(msg.sender == owner, "only owner");
+    require(msg.sender == owner,
+      OnlyOwnerAction({
+        warning: "Only owner"
+      })
+    );
     _;
   }
 
@@ -47,7 +59,11 @@ contract Vault is ReentrancyGuard {
   }
 
   function withdraw(address _to, uint256 _amount) payable external onlyOwner nonReentrant {
-    require(address(this).balance > 0, "nothing to withdraw");
+    require(address(this).balance > 0,
+      ZeroBalanceForWithdraw({
+        warning: "Zero balance for withdraw"
+      })
+    );
     (bool success,) = _to.call{value: _amount}("");
     require(success, "faild");
   }

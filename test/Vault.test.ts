@@ -106,9 +106,9 @@ describe('Vault', function () {
     })
 
     it('Revert incorrect withdraw call (_amount)', async function () {
-      expect(
-        ct.connect(owner).withdraw(someAddr, ETH_AMOUNT),
-      ).to.be.revertedWith('nothing to withdraw')
+      expect(ct.connect(owner).withdraw(someAddr, ETH_AMOUNT))
+        .to.be.revertedWithCustomError(ct, 'ZeroBalanceForWithdraw')
+        .withArgs('Zero balance for withdraw')
     })
 
     it('Revert incorrect withdraw call (not a owner)', async function () {
@@ -117,9 +117,9 @@ describe('Vault', function () {
         value: ETH_AMOUNT,
       })
 
-      expect(
-        ct.connect(addr1).withdraw(someAddr, ETH_AMOUNT),
-      ).to.be.revertedWith('only owner')
+      expect(ct.connect(addr1).withdraw(someAddr, ETH_AMOUNT))
+        .to.be.revertedWithCustomError(ct, 'OnlyOwnerAction')
+        .withArgs('Only owner')
     })
   })
 
