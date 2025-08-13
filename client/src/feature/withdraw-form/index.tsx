@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react'
 
 import { useEthereum } from '../../app/hooks/useEthereum'
+import { useTransactionsHistory } from '../../app/hooks/useTransactionsHistory'
 import { VaultErrors } from '../../contarcts/Vault/vaultErrors'
 import { formatEther } from '../../shared/utils/formatEther'
 import { parseEther } from '../../shared/utils/parseEther'
 
 export function WithdrawForm() {
   const { signer, contract } = useEthereum()
+  const { fetchHistory } = useTransactionsHistory()
 
   const [value, setValue] = useState<string>('')
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,6 +25,10 @@ export function WithdrawForm() {
       await tx.wait()
 
       setValue('')
+
+      if (contract && fetchHistory) {
+        await fetchHistory()
+      }
     } catch (err: any) {
       const errorData = err.data || err?.error?.data
       const decoded = VaultErrors.parseError(errorData)

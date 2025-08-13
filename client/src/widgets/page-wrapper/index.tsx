@@ -20,15 +20,12 @@ export function PageWrapper() {
   return (
     <Fragment>
       <div style={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
-        {/* TODO some error in CtBalanceBanner */}
-
         <CtBalanceBanner />
 
         <UserBalanceBanner />
 
         <UserDepositBalance />
       </div>
-
       <div
         style={{
           display: 'flex',

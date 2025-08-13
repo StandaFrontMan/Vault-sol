@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react'
 
 import { useEthereum } from '../../app/hooks/useEthereum'
+import { useTransactionsHistory } from '../../app/hooks/useTransactionsHistory'
 import ctArtifacts from '../../contarcts/Vault/vault-artifacts.json'
 import { formatEther } from '../../shared/utils/formatEther'
 import { parseEther } from '../../shared/utils/parseEther'
 
 export function DepositForm() {
   const { signer, contract } = useEthereum()
+  const { fetchHistory } = useTransactionsHistory()
 
   const [value, setValue] = useState<string>('')
 
@@ -16,13 +18,22 @@ export function DepositForm() {
 
   const handleDeposit = async () => {
     if (!signer) return
-    const tx = await signer.sendTransaction({
-      to: ctArtifacts.ct_addr,
-      value: parseEther(value),
-    })
 
-    await tx.wait()
-    setValue('')
+    try {
+      const tx = await signer.sendTransaction({
+        to: ctArtifacts.ct_addr,
+        value: parseEther(value),
+      })
+
+      await tx.wait()
+      setValue('')
+
+      if (contract && fetchHistory) {
+        await fetchHistory()
+      }
+    } catch (err) {
+      console.error('Deposit failed', err)
+    }
   }
 
   useEffect(() => {
