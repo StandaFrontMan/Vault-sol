@@ -3,7 +3,30 @@ import { TxHistoryTableCard } from './components/tx-history-table-card'
 import { TxHistoryTableHead } from './components/tx-history-table-head'
 
 export function TxHistoryTable() {
-  const { history } = useTransactionsHistory()
+  const { history, loading } = useTransactionsHistory()
+
+  if (loading) {
+    return <div>Loading history...</div>
+  }
+
+  if (!history) {
+    return (
+      <div
+        style={{
+          borderRadius: '8px',
+          padding: '16px',
+          margin: '12px 0',
+          border: '1px solid #e1e4e8',
+          maxWidth: '600px',
+          width: '100%',
+        }}
+      >
+        <h3 style={{ marginBottom: '12px', fontSize: '16px', fontWeight: 600 }}>
+          Empty history, so commit first one :-)
+        </h3>
+      </div>
+    )
+  }
 
   return (
     <div
@@ -21,17 +44,13 @@ export function TxHistoryTable() {
       </h3>
 
       <table
-        style={{
-          width: '100%',
-          borderCollapse: 'collapse',
-          fontSize: '14px',
-        }}
+        style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}
       >
         <TxHistoryTableHead />
-
         <tbody>
           {history.map(tx => {
             const key = tx.txHash
+
             return <TxHistoryTableCard key={key} tx={tx} />
           })}
         </tbody>
