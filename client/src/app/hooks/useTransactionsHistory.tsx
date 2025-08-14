@@ -59,8 +59,20 @@ export function useTransactionsHistory() {
   }, [contract])
 
   useEffect(() => {
+    if (!contract) return
+    const onDeposit = () => fetchHistory()
+    const onWithdraw = () => fetchHistory()
+
+    contract.on('DepositEvent', onDeposit)
+    contract.on('WithdrawEvent', onWithdraw)
+
     fetchHistory()
-  }, [fetchHistory])
+
+    return () => {
+      contract.off('DepositEvent', onDeposit)
+      contract.off('WithdrawEvent', onWithdraw)
+    }
+  }, [contract, fetchHistory])
 
   return { history, loading, fetchHistory }
 }
