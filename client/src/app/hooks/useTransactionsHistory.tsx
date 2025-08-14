@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 
 import { useEthereum } from './useEthereum'
 
-interface VaultEvent {
+export interface VaultEvent {
   type: 'deposit' | 'withdraw'
   sender: string
   amount: string
