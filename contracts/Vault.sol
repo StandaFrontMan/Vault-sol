@@ -25,6 +25,10 @@ error ExistingUserWithdrawCommit(string warning);
 /// @param warning - string text
 error NonExistingUserWithdrawCommit(string warning);
 
+/// Frozen funds error
+/// @param warning - string text
+error FrozenFunds(string warning);
+
 contract Vault is ReentrancyGuard {
   address payable public owner;
 
@@ -83,9 +87,13 @@ contract Vault is ReentrancyGuard {
 
 
   function userWithdraw(uint256 _amount) public payable nonReentrant {
-    delete userWithdrawCommits[msg.sender];
-
     // 1 check
+    require(userWithdrawCommits[msg.sender] == bytes32(0),
+      FrozenFunds({
+        warning: "Your funds are frozen, delete or reveal commit first"
+      })
+    );
+
     require(deposits[msg.sender] >= _amount,
       InsufficientBalance({
         available: deposits[msg.sender],

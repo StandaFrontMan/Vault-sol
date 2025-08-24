@@ -81,7 +81,7 @@ describe('Vault', function () {
       expect(ctBalanceBeforeTx).to.be.eq(ctBalanceAfterTx)
     })
 
-    it('Shold deposite decreese after success user withdraw call', async function () {
+    it('Should deposite decreese after success user withdraw call', async function () {
       const addr1DepositeBeforeTx = await ct.deposits(await addr1.getAddress())
 
       await addr1.sendTransaction({
@@ -94,6 +94,30 @@ describe('Vault', function () {
       const addr1DepositeAfterTx = await ct.deposits(await addr1.getAddress())
 
       expect(addr1DepositeBeforeTx).to.be.eq(addr1DepositeAfterTx)
+    })
+
+    it('Revert userWithdraw call if a commit exist', async () => {
+      const addr1Address = await addr1.getAddress()
+
+      await addr1.sendTransaction({
+        to: ct.getAddress(),
+        value: ETH_AMOUNT,
+      })
+
+      const hashedSecretPhrase =
+        ethers.encodeBytes32String(SECRET_REVEAL_PHRASE)
+      const hashedWithdrawCommit = ethers.solidityPackedKeccak256(
+        ['address', 'bytes32', 'uint256'],
+        [addr1Address, hashedSecretPhrase, ETH_AMOUNT],
+      )
+
+      await ct.connect(addr1).commitUserWithdraw(hashedWithdrawCommit)
+
+      expect(async () => {
+        await ct.connect(addr1).userWithdraw(ETH_AMOUNT)
+      })
+        .to.be.revertedWithCustomError(ct, 'FrozenFunds')
+        .withArgs('Your funds are frozen, delete or reveal commit first')
     })
 
     it('Should emit event WithdrawEvent', async () => {
