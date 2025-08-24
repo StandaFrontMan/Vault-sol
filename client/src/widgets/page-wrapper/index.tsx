@@ -1,9 +1,9 @@
-import { Fragment } from 'react/jsx-runtime'
-
 import { useEthereum } from '../../app/hooks/useEthereum'
 import {
+  CommitForm,
   CtBalanceBanner,
   DepositForm,
+  RevealForm,
   TxHistoryTable,
   UserBalanceBanner,
   UserDepositBalance,
@@ -29,17 +29,33 @@ export function PageWrapper() {
 
         <UserDepositBalance />
       </div>
+
       <div
         style={{
           display: 'flex',
           flexDirection: 'row',
           justifyContent: 'center',
+          // alignItems: 'center',
           gap: '10px',
         }}
       >
         <DepositForm />
 
         <WithdrawForm />
+      </div>
+
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center',
+          // alignItems: 'center',
+          gap: '10px',
+        }}
+      >
+        <CommitForm />
+
+        <RevealForm />
       </div>
 
       <TxHistoryTable />
