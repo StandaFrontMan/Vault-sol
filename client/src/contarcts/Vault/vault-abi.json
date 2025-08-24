@@ -8,6 +8,28 @@
     {
       "inputs": [
         {
+          "internalType": "string",
+          "name": "warning",
+          "type": "string"
+        }
+      ],
+      "name": "ExistingUserWithdrawCommit",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "warning",
+          "type": "string"
+        }
+      ],
+      "name": "FrozenFunds",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "uint256",
           "name": "available",
           "type": "uint256"
@@ -19,6 +41,17 @@
         }
       ],
       "name": "InsufficientBalance",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "warning",
+          "type": "string"
+        }
+      ],
+      "name": "NonExistingUserWithdrawCommit",
       "type": "error"
     },
     {
@@ -47,6 +80,18 @@
       ],
       "name": "ZeroBalanceForWithdraw",
       "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [],
+      "name": "CreatedUserWithdrawEvent",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [],
+      "name": "DeletedUserWithdrawEvent",
+      "type": "event"
     },
     {
       "anonymous": false,
@@ -89,6 +134,26 @@
     {
       "stateMutability": "payable",
       "type": "fallback"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_hashedWithdrawCommit",
+          "type": "bytes32"
+        }
+      ],
+      "name": "commitUserWithdraw",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "deleteUserWithdrawCommit",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
       "inputs": [
@@ -154,11 +219,48 @@
           "internalType": "uint256",
           "name": "_amount",
           "type": "uint256"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "_secret",
+          "type": "bytes32"
+        }
+      ],
+      "name": "revealUserWithdraw",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
         }
       ],
       "name": "userWithdraw",
       "outputs": [],
       "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "userWithdrawCommits",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
